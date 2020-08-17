@@ -1,8 +1,6 @@
 from graphviz import Digraph
 import networkx as nx
 
-from src import ProbParameter
-
 class Graph(object):
     def __init__(self):
         self.nodes = []

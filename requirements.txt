@@ -1,0 +1,5 @@
+networkx
+graphviz
+pandas
+rpy2
+numpy

@@ -2,7 +2,6 @@ from pandas import read_csv
 import numpy as np
 import graphviz
 
-from leapp.DataTransformer import DataTransformer, DataMap
 from leapp.JSONModelCreator import JSONModelCreator
 from leapp.GenerateModel import GeneratePyMc3Model
 
