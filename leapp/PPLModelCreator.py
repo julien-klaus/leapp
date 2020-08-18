@@ -7,7 +7,7 @@ from leapp.ProbParameter import generate_prob_graphs, is_similar, merge_nodes, \
 
 class PPLModel():
     def __init__(self, model_name, csv_file, continuous_variables=[], discrete_variables=[], whitelist_edges=[],
-                 blacklist_edges=[], score="", algo="", verbose=False):
+                 blacklist_edges=[], score="", algo="", simplify_tolerance = 0.0, verbose=False):
         self.file = csv_file
         self.model_name = model_name
         self.cont_white = continuous_variables
@@ -27,6 +27,8 @@ class PPLModel():
         bayesian_model = BayesianModel(continuous_variables=self.cont_white, discrete_variables=self.disc_white,
                                        whitelist=self.edges_white,
                                        blacklist=self.edges_black, score=self.score, algo=self.algo)
+        if simplify_tolerance != 0.0:
+            bayesian_model.simplify(simplify_tolerance)
         self.error = bayesian_model.learn_through_r(self.file, relearn=True, verbose=verbose)
         if not self.error:
             descr = bayesian_model.get_graph_description()
