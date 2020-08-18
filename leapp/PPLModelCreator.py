@@ -1,7 +1,7 @@
-from scripts.julien.learn_pymc3.BlogCreator import BlogCreator
-from scripts.julien.learn_pymc3.PyMCCreator import PyMCCreator
-from scripts.julien.learn_pymc3.BayesianModel import BayesianModel
-from scripts.julien.learn_pymc3.ProbParameter import generate_prob_graphs, is_similar, merge_nodes, \
+from leapp.BlogCreator import BlogCreator
+from leapp.PyMCCreator import PyMCCreator
+from leapp.BayesianModel import BayesianModel
+from leapp.ProbParameter import generate_prob_graphs, is_similar, merge_nodes, \
     print_prob_table
 
 
