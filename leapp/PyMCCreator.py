@@ -42,6 +42,7 @@ class PyMCCreator(object):
                                                   mu=self._generate_code_for(node, tree, "mu"),
                                                   sigma=self._generate_code_for(node, tree, "sigma"))
         if with_trace:
+            code += f"{level}return model\n"
             code += f"{level}return pm.sample({number_of_samples})"
         return code
 

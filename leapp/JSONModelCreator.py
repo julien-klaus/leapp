@@ -7,13 +7,13 @@ from rpy2.robjects.packages import SignatureTranslatedAnonymousPackage
 
 
 class JSONModelCreator(object):
-    def __init__(self, file, whitelist=None, discrete_variables=[], continuous_variables=[], blacklist=None, score="",
+    def __init__(self, file, whitelist=None, discrete_variables=None, continuous_variables=None, blacklist=None, score="",
                  algo=""):
         self.file = file
         self.whitelist = whitelist
         self.blacklist = blacklist
-        self.discrete_variables = discrete_variables
-        self.continuous_variables = continuous_variables
+        self.discrete_variables = discrete_variables if discrete_variables else []
+        self.continuous_variables = continuous_variables if continuous_variables else []
         # check if score and algorithm is available
         self.score = score
         self.algo = algo
@@ -160,8 +160,6 @@ class JSONModelCreator(object):
         if os.name == "nt":
             replaced_code = replaced_code.replace("/", "//")
             replaced_code = replaced_code.replace("\\", "//")
-        if verbose:
-            print(replaced_code)
         try:
             t = SignatureTranslatedAnonymousPackage(replaced_code, "powerpack")
         except:
@@ -175,5 +173,6 @@ class JSONModelCreator(object):
                     print("Fatal Error, skip configuration")
                 return (None, None, None)
         if verbose:
+            print("#### Generated R-CODE ####")
             print(replaced_code)
         return (self.file + ".json", self.discrete_variables, self.continuous_variables)

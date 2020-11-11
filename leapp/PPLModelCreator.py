@@ -25,8 +25,8 @@ class PPLModel():
         dt.transform(file, ending_comma=False, discrete_variables=['cloudy','rain','sprinkler','grass_wet'])
         """
         bayesian_model = BayesianModel(continuous_variables=self.cont_white, discrete_variables=self.disc_white,
-                                       whitelist=self.edges_white,
-                                       blacklist=self.edges_black, score=self.score, algo=self.algo)
+                                       whitelist_edges=self.edges_white,
+                                       blacklist_edges=self.edges_black, score=self.score, algo=self.algo)
         if simplify_tolerance != 0.0:
             bayesian_model.simplify(simplify_tolerance)
         self.error = bayesian_model.learn_through_r(self.file, relearn=True, verbose=verbose)

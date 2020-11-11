@@ -12,8 +12,20 @@ from leapp.JSONReader import JSONReader
 from leapp.ProbParameter import is_similar, merge_nodes
 
 class BayesianModel(object):
-    def __init__(self, discrete_variables=[], continuous_variables=[],
-                 blacklist_edges=None, level_dict=None, whitelist_edges=None, score="bic-cg", algo="hc"):
+    def __init__(self, discrete_variables=None, continuous_variables=None,
+                 blacklist_edges=None, whitelist_edges=None, level_dict=None, score="bic-cg", algo="hc"):
+        """
+
+        :param discrete_variables: variables, that should be discrete in the model
+        :param continuous_variables: variables, that should be continues in the model
+        :param blacklist_edges: edges, that are not allowed in the model
+        :param whitelist_edges: edges, that should be in the model (Note, that it is not possible to set an edge from a continuous variable to a discrete one)
+        :param level_dict:
+        :param score:
+        :param algo:
+        """
+        if discrete_variables is None:
+            discrete_variables = []
         self.graph = None
         self.level_dict = level_dict
         self.whitelist = whitelist_edges if whitelist_edges else []
@@ -24,10 +36,21 @@ class BayesianModel(object):
         self.algo = algo
         self.merged_parameter = 0
 
-    def learn_through_r(self, data_file, relearn=True, install_packages=False, verbose=False):
-        # if an error occurs this returns True, else False
+    def learn_through_r(self, data, relearn=True, json_file = None, install_packages=False, verbose=False):
+        """
+
+        :param data:
+        :param relearn:
+        :param install_packages:
+        :param verbose:
+        :return:
+        """
+        # if an error occurs this function returns True, else False
+        if type(data) != "str":
+            pass
+
         if relearn:
-            jmc = JSONModelCreator(data_file, self.whitelist, self.discrete_variables, self.continuous_variables, self.blacklist, self.score, self.algo)
+            jmc = JSONModelCreator(data, self.whitelist, self.discrete_variables, self.continuous_variables, self.blacklist, self.score, self.algo)
             (json_file, discrete_vars, continuous_vars) = jmc.generate_model_as_json_with_r(install_packages=install_packages, verbose=verbose)
             if json_file == None:
                 bayesian_model = None
@@ -35,7 +58,7 @@ class BayesianModel(object):
             self.discrete_variables = discrete_vars
             self.continuous_variables = continuous_vars
         else:
-            json_file = data_file + ".json"
+            json_file = json_file + ".json"
         json_reader = JSONReader(self)
         bayesian_model = json_reader.parse(json_file)
         return False
