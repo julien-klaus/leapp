@@ -10,7 +10,7 @@ class PyMCCreator(object):
         self.bm = bayesian_model
         self.level_dict = self.bm.get_level_dict()
 
-    def generate(self, function_name="trace", with_model=True, as_function=False, with_trace=False, number_of_samples=1000):
+    def generate(self, function_name="trace", with_model=True, as_function=False, with_trace=False, number_of_samples=1000, query=None):
         code = ""
         level= ""
         if not with_model:
@@ -22,7 +22,7 @@ class PyMCCreator(object):
             if as_function:
                 code += f"def {function_name}():\n"
                 level += "    "
-            code += f'{level} with pm.Model() as model:\n'
+            code += f'{level}with pm.Model() as model:\n'
             level += "    "
         insertion_order = self.bm.get_condition_node_order()
 
@@ -42,7 +42,6 @@ class PyMCCreator(object):
                                                   mu=self._generate_code_for(node, tree, "mu"),
                                                   sigma=self._generate_code_for(node, tree, "sigma"))
         if with_trace:
-            code += f"{level}return model\n"
             code += f"{level}return pm.sample({number_of_samples})"
         return code
 

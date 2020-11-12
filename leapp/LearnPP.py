@@ -1,6 +1,7 @@
 import os
 
 import pandas as pd
+import numpy as np
 
 from leapp.BlogCreator import BlogCreator
 from leapp.PyMCCreator import PyMCCreator
@@ -10,8 +11,8 @@ from leapp.DataTransformer import DataTransformer
 
 class LearnPP():
 
-    def __init__(self, model_name, continuous_variables=None, discrete_variables=None, whitelist_edges=None,
-                 blacklist_edges=None, score="loglik-cg", algo="hc", simplify_tolerance=0.0, verbose=False,
+    def __init__(self, model_name="", continuous_variables=None, discrete_variables=None, whitelist_edges=None,
+                 blacklist_edges=None, score="bic-cg", algo="hc", simplify_tolerance=0.0, verbose=False,
                  install_packages=False):
         self.model_name = model_name
         self.discrete_vars = discrete_variables if discrete_variables else []
@@ -26,21 +27,29 @@ class LearnPP():
         self.map = None
         self.bayesian_model = None
 
-    def fit(self, X):
-        assert isinstance(X, pd.DataFrame), "X have to be a Pandas DataFrame object."
+    def fit(self, X, transform_data=False, cleanup=False):
+        assert isinstance(X, pd.DataFrame), "X has to be a Pandas DataFrame object."
         # first we need the data as a csv file
         file_name = self._save_tmp_data(X)
 
+        # if there are not discrete variables, use the heuristic
+        if len(self.discrete_vars) == 0:
+            self.discrete_vars = self._get_discrete_variables(X)
+
         # we can only deal with numbers, so we should transform all data
-        dt = DataTransformer()
-        file_cleaned = dt.transform(file_name, ending_comma=False, discrete_variables=self.discrete_vars)
-        self.map = dt.get_map()
+        if transform_data:
+            dt = DataTransformer()
+            file_cleaned = dt.transform(file_name, ending_comma=False, discrete_variables=self.discrete_vars)
+            self.map = dt.get_map()
+        else:
+            file_cleaned = file_name
+        print(file_cleaned)
 
         # now we can learn the bayesian model with bnlearn
         bayesian_model = BayesianModel(continuous_variables=self.continuous_vars, discrete_variables=self.discrete_vars,
                                        whitelist_edges=self.edges_white,
                                        blacklist_edges=self.edges_black, score=self.score, algo=self.algo)
-        bayesian_model.learn_through_r(file_cleaned, verbose=self.verbose, install_packages=self.install_packages)
+        bayesian_model.learn_through_r(file_cleaned, relearn=True, verbose=self.verbose, install_packages=self.install_packages)
 
         # and merge similar distributions given the simplify tolererance
         if self.simplify_tolerance != 0.0:
@@ -49,21 +58,31 @@ class LearnPP():
         self.bayesian_model = bayesian_model
 
         # clean up created files
-        os.remove(file_cleaned)
-        os.remove(file_name)
-        os.remove(file_cleaned+".json")
+        if cleanup:
+            os.remove(file_cleaned)
+            os.remove(file_name)
+            os.remove(file_cleaned+".json")
 
-    def _get_discrete_variables(self):
-        # Todo: get the variables through a heuristic
-        pass
+    def _get_discrete_variables(self, data):
+        discrete_vars = []
+        for column, dtype in zip(data.columns, data.dtypes):
+            if dtype == 'object':
+                discrete_vars.append(column)
+            if dtype == 'int64':
+                if len(np.unique(data[column])) <= 20:
+                    discrete_vars.append(column)
+        return discrete_vars
 
     def _save_tmp_data(self, X, file_name="_tmp.dat"):
         X.to_csv(file_name, index=None)
-        return file_name
+        return os.path.abspath(file_name)
 
-    def get_pymc_code(self):
+    def get_pymc_code(self, function_name="trace", with_model=True,
+                      as_function=False, with_trace=False, number_of_samples=10000, query=None):
         pymc = PyMCCreator(self.bayesian_model)
-        return pymc.generate(as_function=True, with_trace=True, number_of_samples=100000)
+        return pymc.generate(function_name=function_name, with_model=with_model,
+                             as_function=as_function, with_trace=with_trace,
+                             number_of_samples=number_of_samples, query=query)
 
     def get_blog_code(self):
         blog = BlogCreator(self.bayesian_model)

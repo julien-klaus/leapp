@@ -161,6 +161,9 @@ class JSONModelCreator(object):
             replaced_code = replaced_code.replace("/", "//")
             replaced_code = replaced_code.replace("\\", "//")
         try:
+            if verbose:
+                print("#### Generated R-CODE ####")
+                print(replaced_code)
             t = SignatureTranslatedAnonymousPackage(replaced_code, "powerpack")
         except:
             if verbose:
@@ -172,7 +175,4 @@ class JSONModelCreator(object):
                 if verbose:
                     print("Fatal Error, skip configuration")
                 return (None, None, None)
-        if verbose:
-            print("#### Generated R-CODE ####")
-            print(replaced_code)
         return (self.file + ".json", self.discrete_variables, self.continuous_variables)
