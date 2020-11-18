@@ -53,5 +53,14 @@ The data object has an error. Maybe there is an index column or there are proble
 **Solution** Check the data frame or look into the R code and print there the `data` variable to see if there are some missmatches.
 
 #### 2. PyMC contains NaN
-
 **Solution** We encounter this with the `loglik` score. May another score can fix this. 
+
+#### 3. `OSError` with R
+`OSError: cannot load library 'C:\Program Files\R\R-3.6.1\bin\x64\R.dll'`
+
+**Solution** Please set the path variables for your R.dll. Especially R_HOME and PATH or try adding to your code.
+```
+import os
+os.environ["R_HOME"] = r"C:\Program Files\R\R-3.6.1"
+os.environ["PATH"]   = r"C:\Program Files\R\R-3.6.1\bin\x64" + ";" + os.environ["PATH"]
+```
