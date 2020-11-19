@@ -19,6 +19,10 @@ Further we need an R (3.6.1) installation with the following packages:
 
 ## Usage
 
+### Example
+Try the run the `example.py` file. This creates a simple PyMC3 code fragment for the cars data set. 
+
+
 ### Terminal
 \>\>\> `python leapp.py` _csv\_file_
 
@@ -30,6 +34,7 @@ from leapp import LearnPP
 lp = LearnPP()
 lp.fit(data)
 ```
+
 - `data` has to be a Pandas `DataFrame` object.
 - `LearnPP` accepts the following parameter
     - `continuous_variables` - variables that are continuous (list) 
