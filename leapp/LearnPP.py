@@ -77,12 +77,12 @@ class LearnPP():
         X.to_csv(file_name, index=None)
         return os.path.abspath(file_name)
 
-    def get_pymc_code(self, function_name="trace", with_model=True,
+    def get_pymc_code(self, function_name="trace", with_model=True, environments=True,
                       as_function=False, with_trace=False, number_of_samples=10000, query=None):
         pymc = PyMCCreator(self.bayesian_model)
         return pymc.generate(function_name=function_name, with_model=with_model,
                              as_function=as_function, with_trace=with_trace,
-                             number_of_samples=number_of_samples, query=query)
+                             number_of_samples=number_of_samples, query=query, environments=environments)
 
     def get_blog_code(self):
         blog = BlogCreator(self.bayesian_model)
