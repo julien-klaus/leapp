@@ -1,103 +1,33 @@
+import os
+
 import itertools
 import pymc3 as pm
 import numpy as np
 import theano.tensor as tt
 from theano.ifelse import ifelse
+import jinja2
 
 
 class PyMCCreator(object):
+    TEMPLATE_FILE = "pymc.py.jinja"
+
     def __init__(self, bayesian_model):
         self.bm = bayesian_model
         self.level_dict = self.bm.get_level_dict()
+        self.template_loader = jinja2.FileSystemLoader(searchpath=os.path.join(os.path.dirname(__file__), "templates"))
+        self.template_env = jinja2.Environment(loader=self.template_loader, trim_blocks=True, lstrip_blocks=True)
+        self.code_template = self.template_env.get_template(self.TEMPLATE_FILE)
 
     def generate(self, function_name="trace", with_model=True, environments=True, as_function=False, with_trace=False, number_of_samples=1000, query=None):
-        code = ""
-        level= ""
-        if not with_model:
-            as_function = False
-            with_trace = False
-        if with_model:
-            if environments:
-                code = "import pymc3 as pm\n"
-                code += "import theano.tensor as tt\n"
-            if query:
-                if environments:
-                    code += "import numpy as np\n"
-                    code += "from sklearn.metrics import accuracy_score, mean_absolute_error\n"
-                    # we need this method for the mean_absolute_error
-                    code += "def mep(samples, bins=1000):\n"
-                    level = "    "
-                    code += f"{level}# get bins and boarders\n"
-                    code += f"{level}b, m = np.histogram(samples, bins=bins)\n"
-                    code += f"{level}# get the boarders for the bin\n"
-                    code += f"{level}d, c = (m[[k for k, (i, j) in enumerate(zip(b, m)) if i == max(b)][0] - 1], m[[k for k, (i, j) in enumerate(zip(b, m)) if i == max(b)][0]])\n"
-                    code += f"{level}# get the samples inside of this bin\n"
-                    code += f"{level}s1 = sorted(samples)\n"
-                    code += f"{level}s2 = samples[samples >= d]\n"
-                    code += f"{level}s3 = s2[s2 <= c]\n"
-                    code += f"{level}# return the mean of this bin\n"
-                    code += f"{level}return np.mean(s3)\n"
-                    level = ""
-            # len of all data, you have to set the variable data by yourself later
-            if query:
-                if environments:
-                    code += f"{level}data = None\n"
-                    code += f"{level}n = len(data.values)\n"
-                    # parameter for sampling
-                    code += f"{level}tune = 1000\n"
-                    code += f"{level}number_of_samples=10000\n"
-                    # predicted values
-                    code += f"{level}y_pred = []\n"
-            if as_function:
-                code += f"def {function_name}():\n"
-                level += "    "
-            if query:
-                code += f"y_pred = []\n"
-                code += f"{level}for index, data_point in data.iterrows():\n"
-                level += "    "
-            code += f'{level}with pm.Model() as model:\n'
-            level += "    "
-        insertion_order = self.bm.get_condition_node_order()
-
-        for node in insertion_order:
-            # from bayesian_network_learning.util.ProbParameter import print_prob_table; print_prob_table(node.get_parameter().get_graph(), node.get_name(), True);
-            name = node.get_name()
-            code += f"{level}{name} = "
-            tree = node.get_parameter().get_prob_graph().get_head()
-
-            if node.is_discrete():
-                code += f"pm.Categorical('{name}', "
-                # if we have a query we look if we have to add the observed parameter
-                if query != None and name in query['conditions']:
-                    code += "observed=data_point['{name}'], "
-                code += "p={prob})\n".format(name=name, prob=self._generate_code_for(node, tree, "prob", query))
-            else:
-                code += f"pm.Normal('{name}', "
-                # if we have a query we look if we have to add the observed parameter
-                if query != None and name in query['conditions']:
-                    code += f"observed=data['{name}'], "
-                code += "mu={mu}, " \
-                        "sigma={sigma})\n".format(name=name,
-                                                  mu=self._generate_code_for(node, tree, "mu", query),
-                                                  sigma=self._generate_code_for(node, tree, "sigma", query))
-        if with_trace:
-            code += f"{level}return pm.sample({number_of_samples})\n"
-        if query != None:
-            # one level back
-            code += f"{level[:-4]}with model:\n"
-            code += f"{level}samples = pm.sample(draws=number_of_samples, tune=tune, model=model)\n"
-            # one level back and count the appearances
-            if query['score'] == 'accuracy':
-                code += f"{level[:-4]}y_pred.append([i for i, j in zip(np.unique(samples['{query['variable']}']), np.bincount(samples['{query['variable']}']))][0])\n"
-                # two levels back
-                code += f"{level[:-8]}score = accuracy_score(y_pred=y_pred, y_true=data['{query['variable']}'])\n"
-                code += f"{level[:-8]}print(score)\n"
-            elif query['score'] == 'mean_absolute':
-                code += f"{level[:-4]}y_pred.append(mep(samples['{query['variable']}']))\n"
-                # two levels back
-                code += f"{level[:-8]}score = mean_absolute_error(y_pred=y_pred, y_true=data['{query['variable']}'])\n"
-                code += f"{level[:-8]}print(score)\n"
-        return code
+        render_context = {"environments": environments,
+                          "as_function": as_function,
+                          "with_trace": with_trace,
+                          "number_of_samples": number_of_samples,
+                          "query": query,
+                          "generate_code_for": self._generate_code_for,
+                          "insertion_order": self.bm.get_condition_node_order()}
+        outputText = self.code_template.render(render_context)
+        return outputText
 
     def generate_and_save_code(self, file_name, function_name="trace", with_model=True, as_function=True,
                                with_trace=True, number_of_samples=1000):

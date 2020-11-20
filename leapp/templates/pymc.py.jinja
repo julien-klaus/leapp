@@ -1,0 +1,39 @@
+{% if environments %}
+import pymc3 as pm
+import theano.tensor as tt
+{% endif %}
+{% if environments and query %}
+import numpy as np
+from sklearn.metrics import accuracy_score, mean_absolute_error
+# we need this method for the mean_absolute_error
+
+def mep(samples, bins=1000):
+    # get bins and boarders
+    b, m = np.histogram(samples, bins=bins)
+    # get the boarders for the bin
+    d, c = (m[[k for k, (i, j) in enumerate(zip(b, m)) if i == max(b)][0] - 1], m[[k for k, (i, j) in enumerate(zip(b, m)) if i == max(b)][0]])
+    # get the samples inside of this bin
+    s1 = sorted(samples)
+    s2 = samples[samples >= d]
+    s3 = s2[s2 <= c]
+    # return the mean of this bin
+    return np.mean(s3)
+{% endif %}
+{% if query %}
+    {% if environments %}
+data = None
+n = len(data.values)
+# parameter for sampling
+tune = 1000
+number_of_samples=10000
+# predicted values
+y_pred = []
+    {% endif %}
+    {% if as_function %}
+def {{ function_name }}():
+    y_pred = []
+    for index, data_point in data.iterrows():
+    {% endif %}
+{% endif %}
+
+{% include "partials/pymc_model.py.jinja" with context %}

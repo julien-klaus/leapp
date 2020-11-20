@@ -1,0 +1,19 @@
+with pm.Model() as model:
+{% for node in insertion_order %}
+    {% with %}
+        {% set name = node.get_name() %}
+        {% set tree = node.get_parameter().get_prob_graph().get_head() %}
+    {% if node.is_discrete() %}
+        {% with %}
+            {% set prob = generate_code_for(node, tree, "prob", query) %}
+    {{ name }} = pm.Categorical('{{ name }}', {% if query != None and name in query['conditions'] %}observed=data_point['{{ name }}'],{% endif %} p={{ prob }})
+        {% endwith %}
+    {% else %}
+        {% with %}
+            {% set mu = generate_code_for(node, tree, "mu", query) %}
+            {% set sigma = generate_code_for(node, tree, "sigma", query) %}
+    {{ name }} = pm.Normal('{{ name }}', {% if query != None and name in query['conditions'] %}observed=data['{{ name }}'],{% endif %} mu={{ mu }}, sigma={{ sigma }})
+        {% endwith %}
+    {% endif %}
+    {% endwith %}
+{% endfor %}
