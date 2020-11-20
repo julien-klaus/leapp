@@ -1,4 +1,4 @@
-# LEArn Probabilistic Programs (leapp)
+# Learn Probabilistic Programs (leapp)
 
 ## Install and Requirements
 Please install the package using `pip install .`
