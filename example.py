@@ -6,11 +6,19 @@ from data import cars
 
 from leapp.LearnPP import LearnPP
 
+from leapp import LearnPP
+
 if __name__ == "__main__":
 
     data = cars.read_cars_json_as_dataframe()
 
-    lp = LearnPP()
-    lp.fit(data)
+    from sklearn.datasets import load_iris
+    data = load_iris()
+    print(data.data)
+    import numpy as np
+    print([data.data.T, data.target])
 
-    print(lp.get_pymc_code())
+    # lp = LearnPP(verbose=True)
+    # lp.fit(data)
+
+    # print(lp.get_pymc_code())
