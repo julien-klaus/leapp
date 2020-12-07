@@ -5,10 +5,9 @@ import pandas as pd
 import numpy as np
 
 from sklearn.preprocessing import scale as normalize_data
+from sklearn.model_selection import ShuffleSplit
 
-# from spn.structure.leaves.parametric.Parametric import Gaussian, Categorical
-
-def read_cars_json_as_dataframe(file=os.path.join("data","cars.json"), normalize=False):
+def read_cars_json_as_dataframe(file=os.path.join("C:\\","Users","Julien Klaus","Development","leapp_github","data", "cars.json"), normalize=True):
     with open(file) as json_file:
         json_data = json.load(json_file)
     data = pd.DataFrame(json_data)
@@ -33,23 +32,26 @@ def read_cars_json_as_dataframe(file=os.path.join("data","cars.json"), normalize
                 data[column] = normalize_data(data[column])
     return data
 
+def train_test_validate(train_size=0.6):
+    data = read_cars_json_as_dataframe()
+    ss = ShuffleSplit(n_splits=1, test_size=1-train_size, random_state=42)
+    train_indices, test_indices = list(ss.split(data))[0]
+    ss = ShuffleSplit(n_splits=1, test_size=0.5, random_state=1337)
+    test_indices, validate_indices = list(ss.split(data.iloc[test_indices]))[0]
+    return data.iloc[train_indices], data.iloc[test_indices], data.iloc[validate_indices]
+
+def train():
+    train, test, validate = train_test_validate()
+    return train
+
+def test():
+    train, test, validate = train_test_validate()
+    return test
+
+def validate():
+    train, test, validate = train_test_validate()
+    return validate
+
 def create_file(file_name, data):
     data.to_csv(file_name, index=None)
     return file_name
-
-"""
-def get_spn_types(with_name=True):
-    spn_parameter_types = {
-        'Miles_per_Gallon': Gaussian,
-        'Cylinders': Categorical,
-        'Displacement': Gaussian,
-        'Horsepower': Gaussian,
-        'Weight_in_lbs': Gaussian,
-        'Acceleration': Gaussian,
-        'Year': Categorical,
-        'Origin': Categorical
-    }
-    if with_name:
-        return spn_parameter_types
-    return list(spn_parameter_types.values())
-"""

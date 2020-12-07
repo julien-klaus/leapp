@@ -52,9 +52,12 @@ class PyMCCreator(object):
                 code += f"def {function_name}():\n"
                 level += "    "
             if query:
-                code += f"y_pred = []\n"
+                code += f"{level}print({function_name})\n"
+                code += f"{level}logging.info('start with {function_name}')\n"
+                code += f"{level}y_pred = []\n"
                 code += f"{level}for index, data_point in data.iterrows():\n"
                 level += "    "
+                code += f"{level}print('current data point', index)\n"
             code += f'{level}with pm.Model() as model:\n'
             level += "    "
         insertion_order = self.bm.get_condition_node_order()
@@ -75,7 +78,7 @@ class PyMCCreator(object):
                 code += f"pm.Normal('{name}', "
                 # if we have a query we look if we have to add the observed parameter
                 if query != None and name in query['conditions']:
-                    code += f"observed=data['{name}'], "
+                    code += f"observed=data_point['{name}'], "
                 code += "mu={mu}, " \
                         "sigma={sigma})\n".format(name=name,
                                                   mu=self._generate_code_for(node, tree, "mu", query),
@@ -97,6 +100,8 @@ class PyMCCreator(object):
                 # two levels back
                 code += f"{level[:-8]}score = mean_absolute_error(y_pred=y_pred, y_true=data['{query['variable']}'])\n"
                 code += f"{level[:-8]}print(score)\n"
+                code += f"{level[:-8]}logging.info(f'{function_name}: {{score}}')\n"
+                code += f"{level[:-8]}return score\n"
         return code
 
     def generate_and_save_code(self, file_name, function_name="trace", with_model=True, as_function=True,
