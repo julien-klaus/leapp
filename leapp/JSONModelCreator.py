@@ -140,7 +140,7 @@ class JSONModelCreator(object):
             } 
             # graphviz.plot(stru)
             # Fit the parameters
-            fit <- bn.fit(stru, data)
+            fit <- bn.fit(stru, data, replace.unidentifiable=TRUE)
             # Export as JSON
             library(jsonlite)
             model <- list()

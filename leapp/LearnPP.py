@@ -12,7 +12,7 @@ from leapp.DataTransformer import DataTransformer
 class LearnPP():
 
     def __init__(self, model_name="", continuous_variables=None, discrete_variables=None, whitelist_edges=None,
-                 blacklist_edges=None, score="bic-cg", algo="hc", simplify_tolerance=0.0, verbose=False,
+                 blacklist_edges=None, score="aic-cg", algo="hc", simplify_tolerance=0.0, verbose=False,
                  install_packages=False):
         self.model_name = model_name
         self.discrete_vars = discrete_variables if discrete_variables else []
@@ -76,6 +76,9 @@ class LearnPP():
     def _save_tmp_data(self, X, file_name="_tmp.dat"):
         X.to_csv(file_name, index=None)
         return os.path.abspath(file_name)
+
+    def export_graph(self, filename="graph.pdf", view=True):
+        return self.bayesian_model.get_graph().export_as_graphviz(filename, view)
 
     def get_pymc_code(self, function_name="trace", with_model=True, environments=True,
                       as_function=False, with_trace=False, number_of_samples=10000, query=None):
