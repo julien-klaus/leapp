@@ -1,6 +1,18 @@
 # Learn Probabilistic Programs (leapp)
 
 ## Install and Requirements
+Create a new conda environment with
+
+    conda env create -f environment.yml
+    
+and activate it with
+
+    conda activate leapp
+    
+delete it with
+
+    conda env remove -n leapp
+
 Please install the package using `pip install .`
 
 We need the following requirements for Python (3.7):
