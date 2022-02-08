@@ -18,10 +18,6 @@ class JSONModelCreator(object):
         # check if score and algorithm is available
         self.score = score
         self.algo = algo
-        buf = []
-        def f(x):
-            buf.append(x)
-        rpy2.rinterface_lib.callbacks.consolewrite_print = f
 
     def get_vars(self):
         variables = []
@@ -165,6 +161,12 @@ class JSONModelCreator(object):
         if os.name == "nt":
             replaced_code = replaced_code.replace("/", "//")
             replaced_code = replaced_code.replace("\\", "//")
+
+        buf = []
+        def f(x):
+            buf.append(x)
+        rpy2.rinterface_lib.callbacks.consolewrite_print = f
+
         try:
             if verbose:
                 print("#### Generated R-CODE ####")
