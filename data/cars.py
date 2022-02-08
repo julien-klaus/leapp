@@ -7,7 +7,7 @@ import numpy as np
 from sklearn.preprocessing import scale as normalize_data
 from sklearn.model_selection import ShuffleSplit
 
-def read_cars_json_as_dataframe(file=os.path.join("C:\\","Users","Julien Klaus","Development","leapp_github","data", "cars.json"), normalize=True):
+def read_cars_json_as_dataframe(file="cars.json", normalize=True):
     with open(file) as json_file:
         json_data = json.load(json_file)
     data = pd.DataFrame(json_data)
