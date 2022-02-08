@@ -27,7 +27,7 @@ Further we need an R (3.6.1) installation with the following packages:
 
 - `bnlearn` - for learning a bayesian network
 - `jsonlite` - for creating and writing a json description of the network
-- (`Rgraphviz` - for plotting the network structure if some want to (see R-code))
+- `Rgraphviz` - for plotting the network structure if some want to (see R-code))
 
 ## Usage
 

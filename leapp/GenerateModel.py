@@ -1,8 +1,8 @@
 import timeit
 import os
 
-import pymc3 as pm
-import theano.tensor as tt
+# import pymc3 as pm
+# import theano.tensor as tt
 import pandas as pd
 
 from leapp.BayesianModel import BayesianModel

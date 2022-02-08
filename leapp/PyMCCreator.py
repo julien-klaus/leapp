@@ -1,8 +1,8 @@
 import itertools
-import pymc3 as pm
+# import pymc3 as pm
 import numpy as np
-import theano.tensor as tt
-from theano.ifelse import ifelse
+# import theano.tensor as tt
+# from theano.ifelse import ifelse
 
 
 class PyMCCreator(object):
