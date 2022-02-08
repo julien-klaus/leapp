@@ -10,9 +10,7 @@ if __name__ == "__main__":
 
     data = cars.read_cars_json_as_dataframe()
 
-
-
-    lp = LearnPP(verbose=True)
+    lp = LearnPP(verbose=False)
     lp.fit(data)
 
     print(lp.get_pymc_code())

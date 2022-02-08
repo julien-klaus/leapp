@@ -4,6 +4,7 @@ from pandas import read_csv
 import numpy as np
 
 from rpy2.robjects.packages import SignatureTranslatedAnonymousPackage
+import rpy2
 
 
 class JSONModelCreator(object):
@@ -17,6 +18,10 @@ class JSONModelCreator(object):
         # check if score and algorithm is available
         self.score = score
         self.algo = algo
+        buf = []
+        def f(x):
+            buf.append(x)
+        rpy2.rinterface_lib.callbacks.consolewrite_print = f
 
     def get_vars(self):
         variables = []
