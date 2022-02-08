@@ -36,7 +36,9 @@ Try the run the `example.py` file. This creates a simple PyMC3 code fragment for
 
 
 ### Terminal
-\>\>\> `python leapp.py` _csv\_file_
+    python leapp.py csv_file
+
+
 
 ### Python
 After installing the package one can learn the probabilistic programm. 
@@ -81,3 +83,8 @@ import os
 os.environ["R_HOME"] = r"C:\Program Files\R\R-3.6.1"
 os.environ["PATH"]   = r"C:\Program Files\R\R-3.6.1\bin\x64" + ";" + os.environ["PATH"]
 ```
+
+#### 4. 'NoneType' object has no attribute 'get_nodes' 
+
+There is something wrong with you *R* installation. Probably some R packages are not installed. 
+Please copy the generated R-code and try it in an R environment. It should give you a hint.
