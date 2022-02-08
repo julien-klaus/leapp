@@ -4,7 +4,6 @@ from pandas import read_csv
 import numpy as np
 
 from rpy2.robjects.packages import SignatureTranslatedAnonymousPackage
-import rpy2
 
 
 class JSONModelCreator(object):
@@ -161,11 +160,6 @@ class JSONModelCreator(object):
         if os.name == "nt":
             replaced_code = replaced_code.replace("/", "//")
             replaced_code = replaced_code.replace("\\", "//")
-
-        buf = []
-        def f(x):
-            buf.append(x)
-        rpy2.rinterface_lib.callbacks.consolewrite_print = f
 
         try:
             if verbose:

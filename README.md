@@ -1,5 +1,9 @@
 # Learn Probabilistic Programs (leapp)
 
+This is a prototype compiling Bayesian networks into probabilistic program languages. 
+For learning the Bayesian networks we use bnlearn. Currently both PyMC3 and Blog code is generated. 
+Unfortunately the bnlearn package for Python is not well designed, so a roundabout via R is used. 
+
 ## Install and Requirements
 Create a new conda environment with
 
@@ -15,11 +19,12 @@ delete it with
 
 Please install the package using `pip install .`
 
-We need the following requirements for Python (3.7):
+We need the following requirements for Python (3.8):
 
 - `networkx` - for graphical output of the underlying networks
 - `graphviz` - for graphical out of the underlying networks
 - `pandas` - for reading and writing data
+- `sklearn` - for some preprocessing
 - `rpy2` - for running R code 
 - `numpy` - for some mathematical calculations
 
@@ -37,7 +42,6 @@ Try the run the `example.py` file. This creates a simple PyMC3 code fragment for
 
 ### Terminal
     python leapp.py csv_file
-
 
 
 ### Python
@@ -62,6 +66,14 @@ lp.fit(data)
 - `fit` accepts the following additional parameter
     - `transform_data` - if strings in the data frame we can replace them by numbers
     - `cleanup` - if there are `?` in the data frame we can remove them (data frame has to be complete)
+
+The `LearnPP` object allows you to get PyMC3 and Blog code
+
+```
+print(lp.get_pymc_code())
+
+print(lp.get_blog_code())
+```
 
 ## Troubleshooting
 #### 1. Error during learning 

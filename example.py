@@ -13,4 +13,8 @@ if __name__ == "__main__":
     lp = LearnPP(verbose=False)
     lp.fit(data)
 
+    print("### PYMC3 Code")
     print(lp.get_pymc_code())
+
+    print("### BLOG Code")
+    print(lp.get_blog_code())
