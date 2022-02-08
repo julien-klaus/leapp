@@ -1,6 +1,7 @@
 name: lp
 dependencies:
 - python=3.8.9
+- pip
 - pip:
   - networkx~=2.5
   - graphviz~=0.15
