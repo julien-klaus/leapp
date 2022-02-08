@@ -2,7 +2,9 @@ name: lp
 dependencies:
 - python=3.8
 - pip
-- Pillow
+- r-base=3.6.1
+- r-jsonlite
+- r-bnlearn
 - pip:
   - networkx~=2.5
   - graphviz~=0.15
