@@ -27,7 +27,7 @@ class LearnPP():
         self.map = None
         self.bayesian_model = None
 
-    def fit(self, X, transform_data=False, cleanup=False):
+    def fit(self, X, transform_data=True, cleanup=False):
         assert isinstance(X, pd.DataFrame), "X has to be a Pandas DataFrame object."
         # first we need the data as a csv file
         file_name = self._save_tmp_data(X)
@@ -36,14 +36,17 @@ class LearnPP():
         if len(self.discrete_vars) == 0:
             self.discrete_vars = self._get_discrete_variables(X)
 
+        if not X.applymap(lambda x: isinstance(x, (int, float))).all().all():
+            transform_data = True
+
         # we can only deal with numbers, so we should transform all data
         if transform_data:
             dt = DataTransformer()
             file_cleaned = dt.transform(file_name, ending_comma=False, discrete_variables=self.discrete_vars)
             self.map = dt.get_map()
+            print("You have categorical data with characters in you code. I had to transform it into numerical values. Please note the following mapping:", self.map, sep="\n")
         else:
             file_cleaned = file_name
-        print(file_cleaned)
 
         # now we can learn the bayesian model with bnlearn
         bayesian_model = BayesianModel(continuous_variables=self.continuous_vars, discrete_variables=self.discrete_vars,

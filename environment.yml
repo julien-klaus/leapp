@@ -1,4 +1,4 @@
-name: lp
+name: leapp
 dependencies:
 - python=3.8
 - pip
@@ -10,6 +10,6 @@ dependencies:
   - graphviz~=0.15
   - pandas~=1.1.4
   - rpy2~=3.3.6
-  - sklearn
+  - scikit-learn
   - matplotlib
   - numpy~=1.20.3

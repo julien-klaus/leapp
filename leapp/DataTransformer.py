@@ -3,6 +3,9 @@ import numbers
 import numpy as np
 import pandas as pd
 
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 
 class DataTransformer(object):
     def __init__(self, numeric=False, save=True):

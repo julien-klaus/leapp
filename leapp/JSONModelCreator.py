@@ -117,7 +117,7 @@ class JSONModelCreator(object):
             r_parameter["install"] = ""
         bnlearn_code = """
             {install}
-            library(bnlearn)
+            suppressPackageStartupMessages(library(bnlearn))
             # Load Data
             data <- read.csv(paste({file},sep=''))
             # Setting discrete variables
